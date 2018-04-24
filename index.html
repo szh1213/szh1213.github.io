@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>firework</title>
+</head>
+
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+	<script>
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+		ctx.textBaselune = "middle";
+		ctx.textAlign = "center";
+		var position = 0;
+
+		var width = canvas.width;
+		var height = canvas.height;
+		var score = 0;
+		var x=100;
+		var y=100;
+
+		var circle = function (x, y, radius, fillCircle){
+			ctx.beginPath();
+			ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+			if(fillCircle) {
+				ctx.fill();
+			} else {
+				ctx.stroke();
+			}
+		};
+
+		var PVector = function(x, y){
+			this.x = x;
+			this.y = y;
+		};
+		PVector.prototype.redo = function (q, w) {
+			this.x = q;
+			this.y = w;
+		};
+		PVector.prototype.add = function(q){
+	       
+	        this.x +=q.x;
+	        this.y +=q.y;
+	        return this;
+	    };
+	    PVector.prototype.sub = function(q){
+	        
+	        this.x -=q.x;
+	        this.y -=q.y;
+	        return this;
+	    };
+	    PVector.prototype.mult = function(q){
+	        
+	        this.x *= q;
+	        this.y *= q;
+	        return this;
+	    };
+	    PVector.prototype.div = function(q){
+	        
+	        this.x /= q;
+	        this.y /= q;
+	        return this;
+	    };
+	    PVector.prototype.normalize = function(){
+	        
+	        var oldlength = Math.sqrt(this.x*this.x + this.y*this.y);
+	        this.x *= 1/oldlength;
+	        this.y *= 1/oldlength;
+	        return this;
+	    };
+	    PVector.prototype.mag = function(){
+	        
+	        return Math.sqrt(this.x*this.x + this.y*this.y);
+	    };
+	    PVector.prototype.setMag = function(newlength){
+	        
+	        if (newlength !==0) {
+	            var oldlength = Math.sqrt(this.x*this.x + this.y*this.y);
+	            this.x *= newlength/oldlength;
+	            this.y *= newlength/oldlength;
+	        }
+	        if (newlength ==0) {
+	            this.x = 0;
+	            this.y = 0;
+	        return this;
+	        }
+	    };
+	    PVector.prototype.heading2D = function(){
+	        
+	        if (this.y>=0) {
+	            if (this.x>=0) {
+	                return Math.atan(this.y/this.x);
+	            }
+	            else{
+	                return Math.atan(this.y/this.x)+Math.PI;
+	            }
+	        }
+	        else {
+	            if (this.x<=0) {
+	                return Math.atan(this.y/this.x)+Math.PI;
+	            }
+	            else{
+	                return Math.atan(this.y/this.x);
+	            }
+	        }
+	    };
+	    PVector.prototype.setDir = function(direction){
+	        
+	        var length = Math.sqrt(this.x*this.x + this.y*this.y);
+	        this.x = length*Math.cos(direction);
+	        this.y = length*Math.sin(direction);
+	        //return this
+	    };
+	    PVector.prototype.rotate = function(radian){
+	        
+	        var newDirection = this.heading2D() + radian;
+	        var length = Math.sqrt(this.x*this.x + this.y*this.y);
+	        this.x = length*Math.cos(direction);
+	        this.y = length*Math.sin(direction);
+	        //return this
+	    };
+		/*var clickHandler = function (event) {
+			ctx.fillText(event.pageX, 50, 150);
+		}*/
+		var firework = function(x, y, color, C){
+			this.x = x;
+			this.y = y;
+			this.textx = x;
+			this.color = color;
+			this.C = C;
+			this.number = 40;
+			this.number2 = 20;
+			this.easing = 0.08;
+			this.l = [];
+			this.v = [];
+			this.k = 0;
+			this.kc = 0;
+			this.rl = 2;
+			for(var i=0;i<this.number;i++){
+				this.l.push([]);
+				for(var j=0;j<this.number2;j++){
+					this.l[i].push(new PVector(this.x,this.y));
+				}
+				this.v.push(new PVector(0,-1));
+			}
+		};
+		firework.prototype.move = function(){
+
+			for(var i=0;i<this.number;i++){
+				if (this.l[0][0].y<=100 ){
+					if (this.l[0][0].y>99){
+						this.k = 1;
+						this.kc = 1;
+						console.log("sdglhjsdkf"+this.l[i].x);
+					}
+				}
+				if (this.k == 1){
+					this.v[i].setDir(i*2*Math.PI/this.number);
+	                this.v[i].setMag(0.2*(1+Math.sin(this.v[i].heading2D())));
+	                this.k = 0;
+	            }
+	            this.l[i][0].add(this.v[i]);
+				//console.log(this.l[i].y);
+				for(var j=1;j<this.number2;j++){
+					var target = [this.l[i][j-1].x,this.l[i][j-1].y]
+                	this.l[i][j].x+=(target[0]-this.l[i][j].x)*this.easing
+                	this.l[i][j].y+=(target[1]-this.l[i][j].y)*this.easing
+                	ctx.fillStyle = this.color;
+					ctx.fillRect(this.l[i][j].x,this.l[i][j].y,this.rl,this.rl);
+				}
+			}
+			if (this.kc == 1){
+				this.C -= 0.5;
+				this.rl += 0.01;
+				ctx.fillText("不造写啥",this.textx,120);
+			}
+		};
+		var randColor = function(){
+			return '#'+('00000'+(Math.random()*0x1000000<<0).toString(16)).slice(-6);
+		};
+		var p = new PVector(20,80);
+		var v = new PVector(1,2);
+		var f = [];
+		var fff = new PVector(20,80);
+		$("canvas").click(function(){
+			p.redo(event.pageX,event.pageY);
+			f.push(new firework(event.pageX,event.pageY,randColor(),255));
+			//fff.mag();
+			//fff.setMag(5);
+			//fff.mult(5);
+			//fff.sub();
+			//fff.heading2D();
+		});
+		t = new firework(200,600,1,1,1,255);
+		setInterval(function () {
+			ctx.clearRect(0, 0, width, height);
+			//circle(p.x, p.y, 20, true);
+			p.add(v);
+			//t.move();
+			ctx.fillText("单身狗的乐趣",400,500);
+			ctx.fillText("点击屏幕放烟花",400,520);
+			console.log(t.l[0].y);
+			for(var i=0;i<f.length;i++){
+				f[i].move();
+				if (f[i].C<0){
+					f.shift();
+				}
+			}
+			//ctx.fillText(position, 50, 50);
+		}, 1);
+	</script>
+</body>
+</html>
