@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>对战BetaGo</title>
+</head>
+
+<body>
+	<canvas id="canvas" width="800" height="600"></canvas>
+
+	<script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+	<script>
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+        ctx.font="20px 微软雅黑"
+		ctx.textBaselune = "middle";
+		ctx.textAlign = "center";
+		var width = canvas.width;
+		var height = canvas.height;
+
+		var circle = function (x, y, radius, fillCircle){
+			ctx.beginPath();
+			ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+			if(fillCircle) {
+				ctx.fill();
+			} else {
+				ctx.stroke();
+			}
+		};
+        var lib = [[[0,100000,0,2,2,2,2,],[1,100000,2,0,2,2,2,],[2,100000,2,2,0,2,2,],[4,100000,2,2,2,2,0,],[3,100000,2,2,2,0,2,],],[[0,2000,0,1,1,1,1,],[1,2000,1,0,1,1,1,],[2,2000,1,1,0,1,1,],[4,2000,1,1,1,1,0,],[3,2000,1,1,1,0,1,],],[[0,600,0,2,2,2,0,],[4,600,0,2,2,2,0,],[0,0.1,0,2,2,2,0,1,],[0,0.1,0,2,2,2,0,9,],[2,600.1,0,2,0,2,2,0,],[5,0.1,1,0,2,2,2,0,],[5,0.1,9,0,2,2,2,0,],[3,600.1,0,2,2,0,2,0,],],[[0,86,0,1,1,1,0,],[4,86,0,1,1,1,0,],[0,0.1,0,1,1,1,0,2,],[0,0.1,0,1,1,1,0,9,],[2,86,0,1,0,1,1,0,],[1,-0.1,2,0,1,1,1,0,],[1,-0.1,0,1,1,1,0,9,],[5,0.1,2,0,1,1,1,0,],[5,0.1,9,0,1,1,1,0,],[3,86,0,1,1,0,1,0,],[4,-0.1,0,1,1,1,0,2,],[4,-0.1,9,0,1,1,1,0,],],[[0,60,0,2,0,2,2,1,],[2,60,0,2,0,2,2,1,],[0,60,0,2,0,2,2,9,],[2,60,0,2,0,2,2,9,],[0,60,0,2,2,0,2,1,],[3,60,0,2,2,0,2,1,],[0,60,0,2,2,0,2,9,],[3,60,0,2,2,0,2,9,],[1,60,2,0,0,2,2,1,],[2,60,2,0,0,2,2,1,],[1,60,2,0,0,2,2,9,],[2,60,2,0,0,2,2,9,],[1,60,2,0,2,0,2,1,],[3,60,2,0,2,0,2,1,],[1,60,2,0,2,0,2,9,],[3,60,2,0,2,0,2,9,],[0,60,0,0,2,2,2,1,],[1,60,0,0,2,2,2,1,],[0,60,0,0,2,2,2,9,],[1,60,0,0,2,2,2,9,],[5,60,1,2,2,0,2,0,],[3,60,1,2,2,0,2,0,],[5,60,9,2,2,0,2,0,],[3,60,9,2,2,0,2,0,],[5,60,1,2,0,2,2,0,],[2,60,1,2,0,2,2,0,],[5,60,9,2,0,2,2,0,],[2,60,9,2,0,2,2,0,],[4,60,1,2,2,0,0,2,],[3,60,1,2,2,0,0,2,],[4,60,9,2,2,0,0,2,],[3,60,9,2,2,0,0,2,],[4,60,1,2,0,2,0,2,],[2,60,1,2,0,2,0,2,],[4,60,9,2,0,2,0,2,],[2,60,9,2,0,2,0,2,],[5,60,1,2,2,2,0,0,],[4,60,1,2,2,2,0,0,],[5,60,9,2,2,2,0,0,],[4,60,9,2,2,2,0,0,],],[[0,50,0,1,0,1,1,2,],[2,50,0,1,0,1,1,2,],[0,50,0,1,0,1,1,9,],[2,50,0,1,0,1,1,9,],[0,50,0,1,1,0,1,2,],[3,50,0,1,1,0,1,2,],[0,50,0,1,1,0,1,9,],[3,50,0,1,1,0,1,9,],[1,50,1,0,0,1,1,2,],[2,50,1,0,0,1,1,2,],[1,50,1,0,0,1,1,9,],[2,50,1,0,0,1,1,9,],[1,50,1,0,1,0,1,2,],[3,50,1,0,1,0,1,2,],[1,50,1,0,1,0,1,9,],[3,50,1,0,1,0,1,9,],[0,50,0,0,1,1,1,2,],[1,50,0,0,1,1,1,2,],[0,50,0,0,1,1,1,9,],[1,50,0,0,1,1,1,9,],[5,50,2,1,1,0,1,0,],[3,50,2,1,1,0,1,0,],[5,50,9,1,1,0,1,0,],[3,50,9,1,1,0,1,0,],[5,50,2,1,0,1,1,0,],[2,50,2,1,0,1,1,0,],[5,50,9,1,0,1,1,0,],[2,50,9,1,0,1,1,0,],[4,50,2,1,1,0,0,1,],[3,50,2,1,1,0,0,1,],[4,50,9,1,1,0,0,1,],[3,50,9,1,1,0,0,1,],[4,50,2,1,0,1,0,1,],[2,50,2,1,0,1,0,1,],[4,50,9,1,0,1,0,1,],[2,50,9,1,0,1,0,1,],[5,50,2,1,1,1,0,0,],[4,50,2,1,1,1,0,0,],[5,50,9,1,1,1,0,0,],[4,50,9,1,1,1,0,0,],],[[0,35,0,0,2,2,0,],[3,35,2,0,2,0,0,],[2,35,0,2,0,0,2,0,],[3,35,0,2,0,0,2,0,],[1,35.1,0,0,2,2,0,],[2,35.1,0,2,0,2,0,],[0,-35,0,0,2,2,0,2,],[3,-35,2,2,0,2,0,0,],[1,-35,2,2,0,0,2,0,],[2,-35,2,2,0,0,2,0,],[1,-35.1,0,0,2,2,0,2,],[2,-35.1,2,0,2,0,2,0,],[4,35,0,2,2,0,0,],[1,35,0,0,2,0,2,],[3,35.1,0,2,2,0,0,],[5,-35,2,0,2,2,0,0,],[2,-35,0,0,2,0,2,2,],[4,-35,0,2,0,0,2,2,],[3,-35,0,2,0,0,2,2,],[4,-35.1,2,0,2,2,0,0,],[3,-35.1,0,2,0,2,0,2,],],[[0,27,0,0,1,1,0,],[3,27,1,0,1,0,0,],[1,27,1,0,0,1,0,],[2,27,1,0,0,1,0,],[1,27.1,0,0,1,1,0,],[2,27.1,0,1,0,1,0,],[0,-27,0,0,1,1,0,1,],[3,-27,1,1,0,1,0,0,],[1,-27,1,1,0,0,1,0,],[2,-27,1,1,0,0,1,0,],[1,-27.1,0,0,1,1,0,1,],[2,-27.1,1,0,1,0,1,0,],[4,27,0,1,1,0,0,],[1,27,0,0,1,0,1,],[3,27,0,1,0,0,1,],[2,27,0,1,0,0,1,],[3,27.1,0,1,1,0,0,],[5,-27,1,0,1,1,0,0,],[2,-27,0,0,1,0,1,1,],[4,-27,0,1,0,0,1,1,],[3,-27,0,1,0,0,1,1,],[4,-27.1,1,0,1,1,0,0,],[3,-27.1,0,1,0,1,0,1,],],];
+        
+        var BetaGo = function (qipan,whoturn,me,enemy){
+            var ablelist=[];
+            var maxloc=[0,0];
+            for(var i=0;i<15;i++){
+                ablelist[i]=[];
+                for(var j=0;j<15;j++){
+                    ablelist[i][j]=0;
+                }
+            }
+            var ddd = function(ilib,loc,v){
+                var strb=[];
+                for(var next=0;next<ilib.length-2;next++){
+                    if(0<=loc[0]+next*v[0] && loc[0]+next*v[0]<15 && 0<=loc[1]+next*v[1] && loc[1]+next*v[1]<15){
+                        var s=qipan[loc[0]+next*v[0]][loc[1]+next*v[1]];
+                        if(me==1){
+                            if(s==2){
+                                strb.push(1);
+                            }else if(s==1){
+                                strb.push(2);
+                            }else{
+                                strb.push(0);
+                            }
+                        }else{
+                            strb.push(s);
+                        }
+                    }else{
+                        strb.push(9);
+                    }
+                }
+                for(var k=0;k<ilib.length-2;k++){
+                    if(strb[k]==ilib[k+2]){
+                        if(k==ilib.length-3){
+                            console.log(strb,[loc[1]+1,String.fromCharCode(loc[0]+65)],[loc[1]+next*v[1],String.fromCharCode(loc[0]+next*v[0]+65)],ilib[1]);
+                            return [[loc[0]+v[0]*ilib[0],loc[1]+v[1]*ilib[0]],ilib[1]+(parseInt(Math.random()*1000000,10)%3-1)/1000];
+                        }
+                    }else{
+                        break;
+                    }
+                }
+                return [loc,0];
+            }
+            for(var i=0;i<15;i++){
+                for(var j=0;j<15;j++){
+                    if(qipan[i][j]==0){
+                        for(var k=0;k<8;k++){
+                            var v=direction[k];
+                            if(0<=i+v[0] && i+v[0]<15 && 0<=j+v[1] && j+v[1]<15){
+                                if(qipan[i+v[0]][j+v[1]]==enemy){
+                                    ablelist[i][j]+=0.005;
+                                }else if(qipan[i+v[0]][j+v[1]]==0){
+                                    if(ablelist[i][j]>0){
+                                        ablelist[i][j]+=0.0001;
+                                    }else{
+                                        ablelist[i][j]-=0.0001;
+                                    }
+                                }else if(qipan[i+v[0]][j+v[1]]==me){
+                                    ablelist[i][j]-=0.005;
+                                }
+                            }
+                        }
+                        ablelist[i][j]=Math.abs(ablelist[i][j])+(parseInt(Math.random()*1000000,10)%3-1)/100000;
+                    }
+                    for(var tlib=0;tlib<lib.length;tlib++){
+                        for(var ilib=0;ilib<lib[tlib].length;ilib++){
+                            for(var k=0;k<4;k++){
+                                var allresult=ddd(lib[tlib][ilib],[i,j],direction[k]);
+                                var result=allresult[0];
+                                ablelist[result[0]][result[1]]+=allresult[1];
+                            }
+                        }
+                    }
+                }
+            }
+            if(whoturn == 0){
+                ablelist[7][7]+=0.1;
+            }
+            for(var i=0;i<15;i++){
+                for(var j=0;j<15;j++){
+                    if(ablelist[i][j]>ablelist[maxloc[0]][maxloc[1]]){
+                        maxloc=[i,j];
+                    }
+                }
+            }
+            console.log("result",[maxloc[1]+1,String.fromCharCode(65+maxloc[0])],ablelist[maxloc[0]][maxloc[1]]);
+            return maxloc;
+        }
+        
+		var qipan = new Array();
+		var qizi = new Array();
+		var game = 0;
+		var whowin = "none";
+		var whoturn = 0;
+        var whofirst = 0;
+        var help = 0;
+        var returnstep = 0;
+        var maxreturnstep = 0;
+        var returnum = 0;
+        var direction=[[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]];
+        for(var i=0;i<15;i++){
+            qipan[i]=[];
+            for(var j=0;j<15;j++){
+                qipan[i][j]=0;
+            }
+        }
+        for(var i=0;i<225;i++){
+            qizi[i]=[-100,0];
+        }
+		$("canvas").click(function(){
+			var pos=[event.pageX,event.pageY];
+			if(game==0){
+				if(480<pos[0] && pos[0]<480+150 && 50<pos[1] && pos[1]<50+40){
+                    for(var i=0;i<15;i++){
+                        for(var j=0;j<15;j++){
+                            qipan[i][j]=0;
+                        }
+                    }
+                    for(var i=0;i<225;i++){
+                        qizi[i]=[-100,0];
+                    }
+	                whowin = "none";
+                    whofirst = 0;
+	                whoturn = 0;
+	                game = 100;
+				}
+                if(480<pos[0] && pos[0]<480+150 && 150<pos[1] && pos[1]<150+40){
+                    for(var i=0;i<15;i++){
+                        for(var j=0;j<15;j++){
+                            qipan[i][j]=0;
+                        }
+                    }
+                    for(var i=0;i<225;i++){
+                        qizi[i]=[-100,0];
+                    }
+	                whowin = "none";
+                    whofirst = 1;
+	                whoturn = 0;
+	                game = 100;
+				}
+			}else if(game==100){
+                for(var i=1;i<8;i++){
+                    if(480<pos[0] && pos[0]<480+150 && 50*i<pos[1] && pos[1]<50*i+40){
+                        help=1;
+                        maxreturnstep=i;
+                        game=1;
+                    }
+                }
+                if(480<pos[0] && pos[0]<480+150 && 450<pos[1] && pos[1]<450+40){
+                    help=0;
+                    game=1;
+                }
+            }else if(game==1){
+				if(whoturn%2==whofirst){
+                    for(var i=0;i<15;i++){
+                        for(var j=0;j<15;j++){
+                            if(qipan[i][j]==0 && i*30+15<pos[1] && pos[1]<i*30+45 && j*30+15<pos[0] && pos[0]<j*30+45){
+                                qipan[i][j]=whofirst+1;
+                                qizi[whoturn]=[i,j];
+                                whoturn+=1;
+                                returnstep=0;
+                            }
+                        }
+                    }
+                }
+                if(help==1 && returnstep<maxreturnstep && 480<pos[0] && pos[0]<480+150 && 50<pos[1] && pos[1]<50+40){
+                    qipan[qizi[whoturn-1][0]][qizi[whoturn-1][1]]=0;
+                    qipan[qizi[whoturn-2][0]][qizi[whoturn-2][1]]=0;
+                    qizi[whoturn-1]=[-100,0];
+                    qizi[whoturn-2]=[-100,0];
+                    whoturn-=2;
+                    returnstep++;
+                    returnum++;
+				}
+			}
+		});
+		setInterval(function () {
+			ctx.clearRect(0, 0, width, height);
+			ctx.strokeStyle="#000000";
+			ctx.lineWidth = 3;
+			ctx.beginPath();
+			for(var i=1;i<=15;i++){
+				ctx.moveTo(i*30,30);
+				ctx.lineTo(i*30,450);
+				ctx.moveTo(30,i*30);
+				ctx.lineTo(450,i*30);
+                ctx.fillStyle = "#000000";
+				ctx.fillText(i,i*30,20);
+				ctx.fillText(String.fromCharCode(64+i),15,i*30+7);
+			}
+			ctx.stroke();
+            ctx.fillStyle = "#000000";
+            circle(120,120,5,true);
+            circle(360,120,5,true);
+            circle(120,360,5,true);
+            circle(360,360,5,true);
+            for(var i=0;i<225;i++){
+                if(i%2==0){
+                    ctx.fillStyle = "#000000";
+                    circle(qizi[i][1]*30+30,qizi[i][0]*30+30,15,true);
+                }else{
+                    ctx.fillStyle = "#CCCCCC";
+                    circle(qizi[i][1]*30+30,qizi[i][0]*30+30,15,true);
+                }
+            }
+            if(whoturn%2==1-whofirst){
+                var result=BetaGo(qipan,whoturn,2-whofirst,1+whofirst);
+                
+                qipan[result[0]][result[1]]=2-whofirst;
+                qizi[whoturn]=result;
+                whoturn+=1;
+            }
+            for(var i=0;i<15;i++){
+                for(var j=0;j<15;j++){
+                    if(qipan[i][j]!=0){
+                        for(var k=0;k<4;k++){
+                            var v=direction[k];
+                            for(var next=1;next<5;next++){
+                                if(0<=i+next*v[0] && i+next*v[0]<15 && 0<=j+next*v[1] && j+next*v[1]<15){
+                                    if(qipan[i][j]==qipan[i+next*v[0]][j+next*v[1]]){
+                                        if(next==4){
+                                            if(qipan[i][j]-whofirst==1){
+                                                whowin="玩家胜出";
+                                            }else{
+                                                whowin="BetaGo胜出";
+                                            }
+                                            game=0;
+                                        }
+                                    }else{
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if(qizi[224][0]!=-100){
+                whowin="平局";
+            }
+			if(game==0){
+				ctx.strokeStyle = "#000000";
+				ctx.strokeRect(480,50,150,40);
+				ctx.fillStyle = "#000000";
+				ctx.fillText("玩家先行",555,70);
+				ctx.strokeStyle = "#000000";
+				ctx.strokeRect(480,150,150,40);
+				ctx.fillStyle = "#000000";
+				ctx.fillText("BetaGo先行",555,170);
+				ctx.fillStyle = "#FF0000";
+				if(whowin!="none"){
+					ctx.fillText(whowin,250,480);
+				}
+			}else if(game==100){
+                for(var i=1;i<8;i++){
+                    ctx.strokeStyle = "#000000";
+                    ctx.strokeRect(480,50*i,150,40);
+                    ctx.fillStyle = "#000000";
+                    ctx.fillText(i+"次悔棋",555,50*i+20);
+                }
+				ctx.strokeStyle = "#000000";
+				ctx.strokeRect(480,450,150,40);
+				ctx.fillStyle = "#000000";
+				ctx.fillText("玩家自信满满",555,420);
+				ctx.fillText("不用悔棋",555,470);
+                ctx.fillText("我菜,需要连续",555,20);
+				ctx.fillStyle = "#FF0000";
+				if(whowin!="none"){
+					ctx.fillText(whowin,250,500);
+				}
+			}else if(game==1){
+                if(help==1){
+                    ctx.strokeStyle = "#000000";
+                    ctx.strokeRect(480,50,150,40);
+                    ctx.fillStyle = "#000000";
+                    ctx.fillText("悔棋",555,70);
+                }
+			    ctx.fillText("千万不要输给机器啊",250,480);
+            }
+            if(help==1 && game!=100){
+                ctx.fillStyle = "#000000";
+                ctx.fillText("玩家认为自己菜",555,220);
+                ctx.fillText("玩家认为需要悔棋",555,270);
+                ctx.fillText("玩家已悔棋"+returnum+"次",555,320);
+                ctx.fillText("玩家已连续悔棋"+returnstep+"次",555,370);
+                ctx.fillText("许可连续"+maxreturnstep+"次悔棋",555,420);
+            }
+		}, 1);
+    </script>
+    <br><a href="/./index.html">返回主页</a>
+</body>
+</html>
